@@ -5,7 +5,7 @@ import { Table } from './table.schema';
 import { v4 } from 'uuid';
 @Injectable()
 export class TableService {
-  constructor(@InjectModel(Table.name) private tableModel: Model<Table>) {}
+  constructor(@InjectModel(Table.name) private tableModel: Model<Table>) { }
   async createTable(userName: string, tableName: string, description: string) {
     const existingTable = await this.tableModel.findOne({
       name: tableName,
@@ -38,14 +38,33 @@ export class TableService {
       .skip((page - 1) * limit)
       .limit(limit)
       .exec();
-    return tableList;
+    const total = await this.tableModel.countDocuments({ userName }).exec();
+    return {
+      data: tableList,
+      total,
+      page,
+      limit,
+    };
   }
-  async deleteTable(tableName: string) {
-    const existingTable = await this.tableModel.findOne({ name: tableName });
+  async deleteTable(tableName: string, userName: string) {
+    const existingTable = await this.tableModel.findOne({
+      name: tableName,
+      userName,
+    });
     if (!existingTable) {
       throw new ConflictException('表格不存在');
     }
-    existingTable.deleteOne();
+    await this.tableModel.deleteOne({ name: tableName, userName }).exec();
     return existingTable;
+  }
+  async findUrl(tableName: string, userName: string) {
+    const existingTable = await this.tableModel.findOne({
+      name: tableName,
+      userName,
+    });
+    if (!existingTable) {
+      throw new ConflictException('表格不存在');
+    }
+    return existingTable.url;
   }
 }

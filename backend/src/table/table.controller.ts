@@ -1,19 +1,20 @@
 import { Controller, Post, UseGuards, Body, Request } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { TableService } from './table.service';
+import { CurrentUser } from '../common/decorators/current-user.decorator';
 
 @Controller('table')
 export class UsersController {
-  constructor(private tableService: TableService) {}
+  constructor(private tableService: TableService) { }
 
   @UseGuards(AuthGuard('jwt'))
   @Post('create')
   async createTable(
-    @Request() req: Request & { user: { id: string; username: string } },
+    @CurrentUser() user: { username: string },
     @Body() body: { name: string; description: string },
   ) {
     return this.tableService.createTable(
-      req.user.username,
+      user.username,
       body.name,
       body.description,
     );
@@ -21,16 +22,19 @@ export class UsersController {
 
   @UseGuards(AuthGuard('jwt'))
   @Post('delete')
-  async deleteTable(@Body() body: { name: string }) {
-    return this.tableService.deleteTable(body.name);
+  async deleteTable(
+    @Body() body: { name: string },
+    @CurrentUser() user: { username: string },
+  ) {
+    return this.tableService.deleteTable(body.name, user.username);
   }
 
   @UseGuards(AuthGuard('jwt'))
   @Post('list')
   async findTableList(
-    @Request() req: Request & { user: { id: string; username: string } },
+    @CurrentUser() user: { username: string },
+    @Body() body: { page: number; limit: number },
   ) {
-    const currentUser = req.user;
-    return this.tableService.findTableList({}, currentUser.username);
+    return this.tableService.findTableList(body, user.username);
   }
 }
