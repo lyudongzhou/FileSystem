@@ -5,12 +5,24 @@
  */
 
 // Composables
-import { createRouter, createWebHistory } from 'vue-router/auto'
+import { createRouter, createWebHashHistory } from 'vue-router/auto'
 import { setupLayouts } from 'virtual:generated-layouts'
 import { routes } from 'vue-router/auto-routes'
 import { useAppStore } from '@/stores/app'
+// const allRoutes = routes.map(r => {
+//   if (r.path === '/login') {
+//     return {
+//       ...r,
+//       meta: {
+//         ...(r.meta || {}),
+//         layout: false,
+//       }
+//     }
+//   }
+//   return r
+// })
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHashHistory(import.meta.env.BASE_URL),
   routes: setupLayouts(routes),
 })
 

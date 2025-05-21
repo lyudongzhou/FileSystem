@@ -1,6 +1,7 @@
 <template>
   <v-sheet border rounded>
-    <v-data-table :headers="headers" :hide-default-footer="lists.length < 11" :items="lists">
+    <v-data-table :headers="headers" hover :hide-default-footer="lists.length < 11" :items="lists"
+      style="min-height: 500px;">
       <template v-slot:top>
         <v-toolbar flat>
           <v-toolbar-title>
@@ -23,10 +24,41 @@
 
       <template v-slot:item.actions="{ item }">
         <div class="d-flex ga-2 justify-end">
-          <v-icon color="medium-emphasis" icon="mdi-content-copy" size="small" @click="addClipBoard(item.url)"></v-icon>
-          <v-icon color="medium-emphasis" icon="mdi-folder-upload" size="small"
-            @click="tableName = item.name; fileshow = true;"></v-icon>
-          <v-icon color="medium-emphasis" icon="mdi-delete" size="small" @click="remove(item.name)"></v-icon>
+          <!-- 复制URL按钮 -->
+          <v-tooltip location="top">
+            <template #activator="{ props }">
+              <v-icon v-bind="props" color="medium-emphasis" icon="mdi-content-copy" size="small"
+                @click="addClipBoard(item.url)"></v-icon>
+            </template>
+            <span>复制预览URL</span>
+          </v-tooltip>
+
+          <!-- 打开URL按钮 -->
+          <v-tooltip location="top">
+            <template #activator="{ props }">
+              <v-icon v-bind="props" color="medium-emphasis" icon="mdi-open-in-new" size="small"
+                @click="openUrl(item.url)" style="cursor: pointer;"></v-icon>
+            </template>
+            <span>打开预览URL</span>
+          </v-tooltip>
+
+          <!-- 上传文件按钮 -->
+          <v-tooltip location="top">
+            <template #activator="{ props }">
+              <v-icon v-bind="props" color="medium-emphasis" icon="mdi-folder-upload" size="small"
+                @click="tableName = item.name; fileshow = true;"></v-icon>
+            </template>
+            <span>上传文件</span>
+          </v-tooltip>
+
+          <!-- 删除按钮 -->
+          <v-tooltip location="top">
+            <template #activator="{ props }">
+              <v-icon v-bind="props" color="medium-emphasis" icon="mdi-delete" size="small"
+                @click="remove(item.name)"></v-icon>
+            </template>
+            <span>删除记录</span>
+          </v-tooltip>
         </div>
       </template>
       <template v-slot:bottom>
@@ -71,9 +103,13 @@ import { listTable, createTable, deleteTable } from "@/api"
 import { shallowRef } from "vue"
 import FileUpLoad from "@/components/FileUpLoad.vue";
 import { useAppStore } from "@/stores/app";
+function openUrl(url: string) {
+  const fullUrl = `${window.location.origin}/user-upload/${url}/`
+  window.open(fullUrl, "_blank")
+}
 const store = useAppStore()
 function addClipBoard(url: string) {
-  navigator.clipboard.writeText(`http://172.16.21.103:9020/${url}`)
+  navigator.clipboard.writeText(`${window.location.origin}/user-upload/${url}/`)
   store.addQueue({
     text: "预览URL已复制到剪贴板！"
   });

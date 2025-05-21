@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  nestjs:
+    image: my-nestjs-app:latest # 使用导入的镜像
+    ports:
+      - '3000:3000'
+    env_file:
+      - product.env # 加载 .env 文件
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'

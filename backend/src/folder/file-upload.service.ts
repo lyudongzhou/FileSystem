@@ -1,18 +1,24 @@
-// file-upload.service.ts
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 
 @Injectable()
 export class FileUploadService {
+  constructor(private configService: ConfigService) {}
+
   async clearFolder(url: string) {
-    const uploadDir = path.join(__dirname, '..', '..', 'uploads', url);
+    const uploadDir = path.join(
+      this.configService.get<string>('UPLOAD_DIR', '/app/uploads'),
+      url,
+    );
     await fs.rm(uploadDir, { recursive: true, force: true });
     return {
       statusCode: 201,
       message: '成功',
     };
   }
+
   async uploadFolder(
     url: string,
     files: Express.Multer.File[],
@@ -20,8 +26,10 @@ export class FileUploadService {
   ): Promise<{
     savedFiles: { relativePath: string; savedPath: string; size: number }[];
   }> {
-    // 确保 tableName 安全，防止路径穿越
-    const uploadDir = path.join(__dirname, '..', '..', 'uploads', url);
+    const uploadDir = path.join(
+      this.configService.get<string>('UPLOAD_DIR', '/app/uploads'),
+      url,
+    );
 
     // 创建上传目录
     await fs.mkdir(uploadDir, { recursive: true });

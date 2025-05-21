@@ -19,7 +19,7 @@ export class FileUploadController {
   constructor(
     private readonly fileUploadService: FileUploadService,
     private tableService: TableService,
-  ) { }
+  ) {}
 
   @Post('folder')
   @UseGuards(AuthGuard('jwt'))

@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  nginx:
+    image: my-nginx-static:latest  # 使用导入的镜像
+    ports:
+      - "9020:80"  # 映射宿主机 8080 端口到容器 80 端口
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/nginx.conf:ro  # 映射 Nginx 配置文件
+      - ./html:/usr/share/nginx/html:ro  # 映射静态文件目录
+    restart: unless-stopped
