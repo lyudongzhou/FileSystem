@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "../request";
 export async function login(username: string, password: string) {
   return axios.post("/api/auth/login", { username, password });
 }

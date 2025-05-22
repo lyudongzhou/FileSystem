@@ -100,16 +100,18 @@
 
 <script lang="ts" setup>
 import { listTable, createTable, deleteTable } from "@/api"
-import { shallowRef } from "vue"
+import { shallowRef, onMounted } from "vue"
 import FileUpLoad from "@/components/FileUpLoad.vue";
 import { useAppStore } from "@/stores/app";
+import copy from 'copy-to-clipboard';
 function openUrl(url: string) {
   const fullUrl = `${window.location.origin}/user-upload/${url}/`
   window.open(fullUrl, "_blank")
 }
 const store = useAppStore()
 function addClipBoard(url: string) {
-  navigator.clipboard.writeText(`${window.location.origin}/user-upload/${url}/`)
+  copy(`${window.location.origin}/user-upload/${url}/`)
+  // navigator.clipboard.writeText(`${window.location.origin}/user-upload/${url}/`)
   store.addQueue({
     text: "预览URL已复制到剪贴板！"
   });

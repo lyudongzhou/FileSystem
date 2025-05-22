@@ -17,6 +17,7 @@ api.interceptors.response.use(
   (error) => {
     const appStore = useAppStore();
     if (error.response.status !== 200) {
+      console.log('err')
       appStore.addQueue({
         text: error.response.data.message,
         color: 'error',
@@ -27,6 +28,7 @@ api.interceptors.response.use(
       appStore.logout()
       router.push("/login")
     }
+    throw error;
   }
 )
 export default api;

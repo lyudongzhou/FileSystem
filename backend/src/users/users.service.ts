@@ -11,6 +11,15 @@ import * as bcrypt from 'bcrypt';
 @Injectable()
 export class UsersService {
   constructor(@InjectModel(User.name) private userModel: Model<User>) {}
+  async changePassword(username: string, newPassword: string): Promise<User> {
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    const user = await this.userModel.findOne({ username });
+    if (!user) {
+      throw new UnauthorizedException('用户不存在');
+    }
+    await user.updateOne({ password: hashedPassword }).exec();
+    return user;
+  }
 
   async register(username: string, password: string): Promise<User> {
     const existingUser = await this.userModel.findOne({ username });

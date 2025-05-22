@@ -28,13 +28,14 @@
               登录
             </v-btn>
             <div class="text-center mt-4"></div>
-            <v-btn block color="primary" size="large" @click="handleRegistor">
+            <v-btn block color="secondary" size="large" @click="handleRegistor">
               注册
             </v-btn>
           </v-form>
         </v-card>
       </v-container>
     </v-main>
+    <registerDialog ref="refRegisterDialog"></registerDialog>
   </v-app>
 </template>
 
@@ -43,6 +44,8 @@ import { computed, ref } from "vue";
 import { login, register } from "@/api";
 import { useAppStore } from "@/stores/app";
 import router from "@/router"
+import registerDialog from "@/components/register.vue";
+const refRegisterDialog = ref<InstanceType<typeof registerDialog>>()
 const store = useAppStore();
 // 表单数据
 const form = ref({
@@ -78,7 +81,8 @@ const handleLogin = async () => {
 
 };
 const handleRegistor = async () => {
-  await register(form.value.username, form.value.password);
+  refRegisterDialog.value?.openDialog()
+  // await register(form.value.username, form.value.password);
 }
 const isDisabled = computed(() => !form.value.username || !form.value.password);
 </script>
